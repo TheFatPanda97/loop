@@ -3,7 +3,12 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
   const isInteger = (str: string) => !isNaN(parseFloat(str)) && Number.isInteger(parseFloat(str));
 
-  const generateCode = async (filePath: string, start?: number, end?: number) => {
+  const generateCode = async (
+    AZURE_API_KEY: string,
+    filePath: string,
+    start?: number,
+    end?: number,
+  ) => {
     let url = vscode.Uri.parse('file://' + filePath);
 
     try {
@@ -38,6 +43,22 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   const commandGenerateCode = vscode.commands.registerCommand('loop.generateCode', async () => {
+    const configurations = vscode.workspace.getConfiguration('loop');
+    const AZURE_API_KEY: string | undefined = configurations.get('azureApiKey');
+
+    if (!AZURE_API_KEY) {
+      const selection = await vscode.window.showInformationMessage(
+        'Error: You Have Not Provided a Azure API Key, Set It Up Now?',
+        'Yes',
+        'No',
+      );
+
+      if (selection === 'Yes') {
+        vscode.commands.executeCommand('workbench.action.openSettings', 'loop.azureApiKey');
+      }
+      return;
+    }
+
     const testLocationQuery = await vscode.window.showInputBox({
       placeHolder: 'Tests Path',
       prompt: 'Provide a Absolute Path to Relevant Tests',
@@ -49,12 +70,28 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    await generateCode(testLocationQuery);
+    await generateCode(AZURE_API_KEY, testLocationQuery);
   });
 
   const commandGenerateCodeRange = vscode.commands.registerCommand(
     'loop.generateCodeRange',
     async () => {
+      const configurations = vscode.workspace.getConfiguration('loop');
+      const AZURE_API_KEY: string | undefined = configurations.get('azureApiKey');
+
+      if (!AZURE_API_KEY) {
+        const selection = await vscode.window.showInformationMessage(
+          'Error: You Have Not Provided a Azure API Key, Set It Up Now?',
+          'Yes',
+          'No',
+        );
+
+        if (selection === 'Yes') {
+          vscode.commands.executeCommand('workbench.action.openSettings', 'loop.azureApiKey');
+        }
+        return;
+      }
+
       const testLocationQuery = await vscode.window.showInputBox({
         placeHolder: 'Tests Path',
         prompt: 'Provide An Absolute Path to Relevant Tests',
@@ -88,7 +125,12 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      await generateCode(testLocationQuery, parseInt(startRangeQuery), parseInt(endRangeQuery));
+      await generateCode(
+        AZURE_API_KEY,
+        testLocationQuery,
+        parseInt(startRangeQuery),
+        parseInt(endRangeQuery),
+      );
     },
   );
 
