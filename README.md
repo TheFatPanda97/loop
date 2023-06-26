@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=".github/logo.png" alt="loop logo" width="150"/>
+  <img src="assets/logo.png" alt="loop logo" width="150"/>
   </hl>
 	<h3>
 		 OpenAI GPT Powered Test Driven Development. Give Me Tests, I'll Give You Code.
