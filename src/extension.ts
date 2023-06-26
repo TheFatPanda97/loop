@@ -10,7 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
     start?: number,
     end?: number,
   ) => {
-    vscode.window.showInformationMessage('Loop: Generating...');
+    vscode.window.showInformationMessage(`Loop: Generating With ${model}...`);
     let url = vscode.Uri.parse('file://' + filePath);
     let range: vscode.Range | null = null;
     let testFile: vscode.TextDocument | null = null;
@@ -57,13 +57,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     if (!OPENAI_API_KEY) {
       const selection = await vscode.window.showInformationMessage(
-        'Error: You Have Not Provided a Azure API Key, Set It Up Now?',
+        'Error: You Have Not Provided a OpenAI API Key, Set It Up Now?',
         'Yes',
         'No',
       );
 
       if (selection === 'Yes') {
-        vscode.commands.executeCommand('workbench.action.openSettings', 'loop.azureApiKey');
+        vscode.commands.executeCommand('workbench.action.openSettings', 'loop.openaiApiKey');
       }
       return;
     }
@@ -96,13 +96,13 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (!OPENAI_API_KEY) {
         const selection = await vscode.window.showInformationMessage(
-          'Error: You Have Not Provided a Azure API Key, Set It Up Now?',
+          'Error: You Have Not Provided a OpenAI API Key, Set It Up Now?',
           'Yes',
           'No',
         );
 
         if (selection === 'Yes') {
-          vscode.commands.executeCommand('workbench.action.openSettings', 'loop.azureApiKey');
+          vscode.commands.executeCommand('workbench.action.openSettings', 'loop.openaiApiKey');
         }
         return;
       }
@@ -158,5 +158,4 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(commandGenerateCode, commandGenerateCodeRange);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}

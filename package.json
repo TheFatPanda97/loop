@@ -33,11 +33,11 @@
         },
         "loop.model": {
           "type": "string",
-          "default": "gpt-4",
+          "default": "gpt-3.5-turbo",
           "description": "Model to use for code generation",
           "enum": [
             "gpt-4",
-            "gpt-3-turbo"
+            "gpt-3.5-turbo"
           ]
         }
       }
