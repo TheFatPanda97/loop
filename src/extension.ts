@@ -74,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const testLocationQuery = await vscode.window.showInputBox({
-      placeHolder: 'Tests Path',
+      placeHolder: 'Test File Path',
       prompt: 'Provide a Absolute Path to Relevant Tests',
       ignoreFocusOut: true,
     });
@@ -113,7 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       const testLocationQuery = await vscode.window.showInputBox({
-        placeHolder: 'Tests Path',
+        placeHolder: 'Test File Path',
         prompt: 'Provide An Absolute Path to Relevant Tests',
         ignoreFocusOut: true,
       });
