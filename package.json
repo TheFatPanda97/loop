@@ -5,6 +5,10 @@
   "version": "1.0.0",
   "icon": "assets/logo-small.png",
   "publisher": "thefatpanda97",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheFatPanda97/loop"
+  },
   "engines": {
     "vscode": "^1.79.0"
   },
