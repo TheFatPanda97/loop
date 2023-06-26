@@ -2,7 +2,7 @@
   "name": "loop",
   "displayName": "loop",
   "description": "Test Driven GPT Code Generation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "assets/logo-small.png",
   "publisher": "thefatpanda97",
   "repository": {
