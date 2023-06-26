@@ -13,5 +13,8 @@ With the introduction of ChatGPT, one interesting feature it provides is that it
 ### Usage
 
 #### Full Test Suite
+https://github.com/TheFatPanda97/loop/assets/36747253/537114d5-a684-4c13-abb5-69d4ed5493e3
 
 #### Partial Test Suite
+https://github.com/TheFatPanda97/loop/assets/36747253/569cb3f6-9ad8-45e3-ac34-d74e043ef493
+
