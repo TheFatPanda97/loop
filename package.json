@@ -1,13 +1,14 @@
 {
   "name": "loop",
   "displayName": "loop",
-  "description": "TDD GPT Code Generation",
-  "version": "0.0.1",
+  "description": "Test Driven GPT Code Generation",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.79.0"
   },
   "categories": [
-    "Other"
+    "Machine Learning",
+    "Testing"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
