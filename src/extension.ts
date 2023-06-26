@@ -1,52 +1,61 @@
 import * as vscode from 'vscode';
+import { isInteger } from './utils';
+import { generateCode } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
-  const isInteger = (str: string) => !isNaN(parseFloat(str)) && Number.isInteger(parseFloat(str));
-
-  const generateCode = async (
-    AZURE_API_KEY: string,
+  const commandHelper = async (
+    OPENAI_API_KEY: string,
+    model: string,
     filePath: string,
     start?: number,
     end?: number,
   ) => {
+    vscode.window.showInformationMessage('Loop: Generating...');
     let url = vscode.Uri.parse('file://' + filePath);
+    let range: vscode.Range | null = null;
+    let testFile: vscode.TextDocument | null = null;
+
+    if (start && end) {
+      range = new vscode.Range(new vscode.Position(start - 1, 0), new vscode.Position(end, 0));
+    }
 
     try {
-      vscode.window.showInformationMessage('Loop: Generating...');
-
-      const testFile = await vscode.workspace.openTextDocument(url);
-      let range: vscode.Range | null = null;
-
-      if (start && end) {
-        range = new vscode.Range(new vscode.Position(start - 1, 0), new vscode.Position(end, 0));
-      }
-
-      // current editor
-      const editor = vscode.window.activeTextEditor;
-
-      if (editor) {
-        const { selection } = editor;
-        const position = selection.active;
-
-        editor.edit((editor) => {
-          if (range) {
-            editor.insert(position, testFile.getText(range));
-          } else {
-            editor.insert(position, testFile.getText());
-          }
-        });
-      }
+      testFile = await vscode.workspace.openTextDocument(url);
     } catch (error) {
       console.error('Loop Error: ', error);
       vscode.window.showInformationMessage('Error: Could Not Read Test File');
+      return;
     }
+
+    // current editor
+    const editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+      return;
+    }
+
+    const { selection } = editor;
+    const position = selection.active;
+    const testCases = range ? testFile!.getText(range) : testFile!.getText();
+    let completedCode = '';
+
+    try {
+      completedCode = await generateCode(testCases, OPENAI_API_KEY, model);
+    } catch (error) {
+      console.error('Loop Error: ', error);
+      vscode.window.showInformationMessage('Error: Could Not Generate Code');
+      return;
+    }
+
+    editor.edit((editor) => editor.insert(position, completedCode));
   };
 
   const commandGenerateCode = vscode.commands.registerCommand('loop.generateCode', async () => {
     const configurations = vscode.workspace.getConfiguration('loop');
-    const AZURE_API_KEY: string | undefined = configurations.get('azureApiKey');
+    const OPENAI_API_KEY: string | undefined = configurations.get('openaiApiKey');
+    const model: string | undefined = configurations.get('model');
 
-    if (!AZURE_API_KEY) {
+    if (!OPENAI_API_KEY) {
       const selection = await vscode.window.showInformationMessage(
         'Error: You Have Not Provided a Azure API Key, Set It Up Now?',
         'Yes',
@@ -56,6 +65,11 @@ export function activate(context: vscode.ExtensionContext) {
       if (selection === 'Yes') {
         vscode.commands.executeCommand('workbench.action.openSettings', 'loop.azureApiKey');
       }
+      return;
+    }
+
+    if (!model) {
+      vscode.window.showInformationMessage('Error: Specify a Model to Use');
       return;
     }
 
@@ -70,16 +84,17 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    await generateCode(AZURE_API_KEY, testLocationQuery);
+    await commandHelper(OPENAI_API_KEY, model, testLocationQuery);
   });
 
   const commandGenerateCodeRange = vscode.commands.registerCommand(
     'loop.generateCodeRange',
     async () => {
       const configurations = vscode.workspace.getConfiguration('loop');
-      const AZURE_API_KEY: string | undefined = configurations.get('azureApiKey');
+      const OPENAI_API_KEY: string | undefined = configurations.get('openaiApiKey');
+      const model: string | undefined = configurations.get('model');
 
-      if (!AZURE_API_KEY) {
+      if (!OPENAI_API_KEY) {
         const selection = await vscode.window.showInformationMessage(
           'Error: You Have Not Provided a Azure API Key, Set It Up Now?',
           'Yes',
@@ -89,6 +104,11 @@ export function activate(context: vscode.ExtensionContext) {
         if (selection === 'Yes') {
           vscode.commands.executeCommand('workbench.action.openSettings', 'loop.azureApiKey');
         }
+        return;
+      }
+
+      if (!model) {
+        vscode.window.showInformationMessage('Error: Specify a Model to Use');
         return;
       }
 
@@ -125,8 +145,9 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      await generateCode(
-        AZURE_API_KEY,
+      await commandHelper(
+        OPENAI_API_KEY,
+        model,
         testLocationQuery,
         parseInt(startRangeQuery),
         parseInt(endRangeQuery),
